@@ -13,19 +13,110 @@ class _CalculatorAppState extends State<CalculatorApp> {
   String _operation = '';
   bool _isNewNumber = true;
 
-  void _addDigital() {}
+  void _addDigital(String digit) {
+    setState(() {
+      if (_isNewNumber) {
+        _display = digit;
+        _isNewNumber = false;
+      } else {
+        if (_display == 0) {
+          _display = digit;
+        } else {
+          _display += digit;
+        }
+      }
+    });
+  }
 
-  void _addDecimal() {}
+  void _addDecimal() {
+    setState(() {
+      if (_isNewNumber) {
+        _display = '0.';
+        _isNewNumber = false;
+      } else if (!_display.contains('.')) {
+        _display += '.';
+      }
+    });
+  }
 
-  void _setOperation() {}
+  void _setOperation(String operation) {
+    setState(() {
+      _firstNumber = _display;
+      _operation = operation;
+      _isNewNumber = true;
+    });
+  }
 
-  void _calculate() {}
+  void _calculate() {
+    if (_firstNumber.isNotEmpty && _operation.isNotEmpty) {
+      setState(() {
+        double first = double.parse(_firstNumber);
+        double second = double.parse(_display);
+        double result = 0;
+        switch (_operation) {
+          case '+':
+            result = first + second;
+            break;
+          case '-':
+            result = first - second;
+            break;
+          case 'x':
+            result = first * second;
+            break;
+          case '%':
+            result = first % second;
+            break;
+          case '÷':
+            if (second != 0) {
+              result = first / second;
+            } else {
+              _display = 'Error';
+              _isNewNumber = true;
+              _firstNumber = '';
+              _operation = '';
+              return;
+            }
+            break;
+        }
+        _display = result.toString();
+        if (_display.endsWith('.0')) {
+          _display = _display.substring(0, _display.length - 2);
+        }
+        _isNewNumber = true;
+        _firstNumber = '';
+        _operation = '';
+      });
+    }
+  }
 
-  void _clear() {}
 
-  void _clearEntry() {}
+  void _clear() {
+    setState(() {
+      _display = '0';
+      _firstNumber = '';
+      _operation = '';
+      _isNewNumber = true;
+    });
+  }
 
-  void _changeSign() {}
+  void _clearEntry() {
+    setState(() {
+      _display = '0';
+      _isNewNumber = true;
+    });
+  }
+
+  void _changeSign() {
+    setState(() {
+      if(_display != '0'){
+        if(_display.startsWith('-')){
+          _display = _display.substring(1);
+        }else{
+          _display = '-$_display';
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,9 +219,9 @@ class _CalculatorAppState extends State<CalculatorApp> {
                         SizedBox(width: 8),
                         Expanded(
                           child: _buildButton(
-                            '÷',
+                            'x',
                             Colors.orange,
-                            () => _setOperation(),
+                                () => _setOperation('x'),
                           ),
                         ),
                       ],
@@ -144,7 +235,7 @@ class _CalculatorAppState extends State<CalculatorApp> {
                           child: _buildButton(
                             '7',
                             Colors.grey.withOpacity(0.6),
-                            () => _addDigital(),
+                            () => _addDigital('7'),
                           ),
                         ),
                         SizedBox(width: 8),
@@ -152,7 +243,7 @@ class _CalculatorAppState extends State<CalculatorApp> {
                           child: _buildButton(
                             '8',
                             Colors.grey.withOpacity(0.6),
-                            () => _addDigital(),
+                            () => _addDigital('8'),
                           ),
                         ),
                         SizedBox(width: 8),
@@ -160,15 +251,130 @@ class _CalculatorAppState extends State<CalculatorApp> {
                           child: _buildButton(
                             '9',
                             Colors.grey.withOpacity(0.6),
-                            () => _addDigital(),
+                            () => _addDigital('9'),
                           ),
                         ),
                         SizedBox(width: 8),
                         Expanded(
                           child: _buildButton(
-                            'x',
+                            '÷',
                             Colors.orange,
-                            () => _setOperation(),
+                            () => _setOperation('÷'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildButton(
+                            '4',
+                            Colors.grey.withOpacity(0.6),
+                            () => _addDigital('4'),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: _buildButton(
+                            '5',
+                            Colors.grey.withOpacity(0.6),
+                            () => _addDigital('5'),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: _buildButton(
+                            '6',
+                            Colors.grey.withOpacity(0.6),
+                            () => _addDigital('6'),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: _buildButton(
+                            '-',
+                            Colors.orange,
+                            () => _setOperation('-'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildButton(
+                            '1',
+                            Colors.grey.withOpacity(0.6),
+                            () => _addDigital('1'),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: _buildButton(
+                            '2',
+                            Colors.grey.withOpacity(0.6),
+                            () => _addDigital('2'),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: _buildButton(
+                            '3',
+                            Colors.grey.withOpacity(0.6),
+                            () => _addDigital('3'),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: _buildButton(
+                            '+',
+                            Colors.orange,
+                            () => _setOperation('+'),
+                          ),
+
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildButton(
+                            '0',
+                            Colors.grey.withOpacity(0.6),
+                                () => _addDigital('0'),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: _buildButton(
+                            '.',
+                              Colors.orange,
+                                _addDecimal,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: _buildButton(
+                            '%',
+                            Colors.orange,
+                                () => _setOperation('%'),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: _buildButton(
+                            '=',
+                            Colors.green,
+                                _calculate,
                           ),
                         ),
                       ],
@@ -197,6 +403,6 @@ Widget _buildButton(
       foregroundColor: color == Colors.black ? Colors.white : Colors.black,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
-    child: Text(text, style: TextStyle(fontSize: 20)),
+    child: Text(text, style: TextStyle(fontSize: 15)),
   );
 }
