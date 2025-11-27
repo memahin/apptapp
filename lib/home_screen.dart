@@ -1,117 +1,194 @@
+import 'dart:ui';
 import 'package:apptapp/todo_app.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'calculator_app.dart';
 import 'counter_app.dart';
+import 'moneyTracker_app.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50], // Softer background
-      body: Column(
-        children: [
-          // 1. Custom Modern Header
-          _buildHeader(),
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
-          // 2. Scrollable App Grid
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: GridView.count(
-                crossAxisCount: 2, // 2 Columns for a dashboard look
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.85, // Taller cards to fit content
-                children: [
-                  _buildModernAppCard(
-                    context,
-                    title: 'To-Do',
-                    subtitle: 'Task Manager',
-                    tag: 'Lists',
-                    icon: Icons.check_circle_outline,
-                    startColor: const Color(0xFF6A11CB),
-                    endColor: const Color(0xFF2575FC),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const TodoApp()),
-                    ),
-                  ),
-                  _buildModernAppCard(
-                    context,
-                    title: 'Counter',
-                    subtitle: 'Tally & Track',
-                    tag: 'State Logic',
-                    icon: Icons.ads_click,
-                    startColor: const Color(0xFF11998e),
-                    endColor: const Color(0xFF38ef7d),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const CounterApp()),
-                    ),
-                  ),
-                  _buildModernAppCard(
-                    context,
-                    title: 'Calculator',
-                    subtitle: 'Math Ops',
-                    tag: 'Logic',
-                    icon: Icons.calculate_outlined,
-                    startColor: const Color(0xFFFF512F),
-                    endColor: const Color(0xFFDD2476),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const CalculatorApp()),
-                    ),
-                  ),
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    // Animation controller for the staggered entrance
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Ensure status bar icons are white
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F1115), // Deep Dark Background
+      body: Stack(
+        children: [
+          // 1. Ambient Background Glows
+          Positioned(
+            top: -100,
+            right: -50,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF6366F1).withOpacity(0.15),
+                boxShadow: [
+                  BoxShadow(color: const Color(0xFF6366F1).withOpacity(0.15), blurRadius: 100, spreadRadius: 50)
                 ],
               ),
             ),
           ),
+          Positioned(
+            bottom: -100,
+            left: -50,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF34D399).withOpacity(0.1),
+                boxShadow: [
+                  BoxShadow(color: const Color(0xFF34D399).withOpacity(0.1), blurRadius: 100, spreadRadius: 50)
+                ],
+              ),
+            ),
+          ),
+
+          // 2. Main Content
+          SafeArea(
+            bottom: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(context),
+
+                const SizedBox(height: 20),
+
+                // Section Title
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Row(
+                    children: [
+                      Container(width: 4, height: 16, color: const Color(0xFF6366F1)), // Accent Bar
+                      const SizedBox(width: 8),
+                      Text(
+                        "COMMAND CENTER",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2.0,
+                          color: Colors.white.withOpacity(0.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // 3. Animated App Grid
+                Expanded(
+                  child: GridView.count(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                    childAspectRatio: 0.85,
+                    children: [
+                      _buildAnimatedCard(
+                        index: 0,
+                        title: 'Tasks',
+                        subtitle: 'Directives',
+                        icon: Icons.check_circle_outline,
+                        gradientColors: [const Color(0xFFC084FC), const Color(0xFF6366F1)],
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TodoApp())),
+                      ),
+                      _buildAnimatedCard(
+                        index: 1,
+                        title: 'Wallet',
+                        subtitle: 'Finances',
+                        icon: Icons.account_balance_wallet_outlined,
+                        gradientColors: [const Color(0xFF34D399), const Color(0xFF059669)],
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MoneyTrackerApp())),
+                      ),
+                      _buildAnimatedCard(
+                        index: 2,
+                        title: 'Tally',
+                        subtitle: 'Counter',
+                        icon: Icons.ads_click,
+                        gradientColors: [const Color(0xFF22D3EE), const Color(0xFF0EA5E9)],
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CounterApp())),
+                      ),
+                      _buildAnimatedCard(
+                        index: 3,
+                        title: 'Maths',
+                        subtitle: 'Calculator',
+                        icon: Icons.calculate_outlined,
+                        gradientColors: [const Color(0xFFF472B6), const Color(0xFFDB2777)],
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CalculatorApp())),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  // Custom Header Widget
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(top: 60, left: 20, right: 20, bottom: 30),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30),
-          bottomRight: Radius.circular(30),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'AppTapp',
+          Text(
+            'RupantorSoft',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-              letterSpacing: 1.2,
+              color: const Color(0xFF22D3EE).withOpacity(0.8), // Cyan glow text
+              letterSpacing: 1.0,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 4),
           const Text(
-            'What would you\nlike to build?',
+            'AppTapp Hub',
             style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: Colors.black87,
-              height: 1.2,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              height: 1.1,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Select a module to begin operations.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white.withOpacity(0.4),
             ),
           ),
         ],
@@ -119,74 +196,109 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Modern Card Widget
-  Widget _buildModernAppCard(
-      BuildContext context, {
-        required String title,
-        required String subtitle,
-        required String tag,
-        required IconData icon,
-        required Color startColor,
-        required Color endColor,
-        required VoidCallback onTap,
-      }) {
+  // Wraps the card in an animation builder for the staggered entry effect
+  Widget _buildAnimatedCard({
+    required int index,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required List<Color> gradientColors,
+    required VoidCallback onTap,
+  }) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        // Calculate delay based on index
+        double delay = index * 0.15;
+        double start = delay;
+        double end = delay + 0.4; // Animation lasts 40% of total duration per item
+
+        var slideCurve = CurvedAnimation(
+          parent: _controller,
+          curve: Interval(start.clamp(0.0, 1.0), end.clamp(0.0, 1.0), curve: Curves.easeOutBack),
+        );
+
+        var fadeCurve = CurvedAnimation(
+          parent: _controller,
+          curve: Interval(start.clamp(0.0, 1.0), end.clamp(0.0, 1.0), curve: Curves.easeOut),
+        );
+
+        return Transform.translate(
+          offset: Offset(0, 50 * (1 - slideCurve.value)), // Slide up 50px
+          child: Opacity(
+            opacity: fadeCurve.value,
+            child: _buildCyberCard(title, subtitle, icon, gradientColors, onTap),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCyberCard(
+      String title,
+      String subtitle,
+      IconData icon,
+      List<Color> gradientColors,
+      VoidCallback onTap,
+      ) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        // Dark Surface with Gradient Border Simulation
         gradient: LinearGradient(
-          colors: [startColor, endColor],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withOpacity(0.1),
+            Colors.white.withOpacity(0.02),
+          ],
         ),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
+          // Subtle glow matching the brand color
           BoxShadow(
-            color: startColor.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: gradientColors.first.withOpacity(0.1),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Material(
-        color: Colors.transparent,
+        color: const Color(0xFF1C1E26).withOpacity(0.8), // Semi-transparent dark bg
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: BorderSide(color: Colors.white.withOpacity(0.05), width: 1)
+        ),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
+          splashColor: gradientColors.first.withOpacity(0.1),
+          highlightColor: gradientColors.first.withOpacity(0.05),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Icon Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(10),
+                // Icon Container
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: gradientColors.first.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: gradientColors.first.withOpacity(0.2),
+                        blurRadius: 20,
+                        spreadRadius: -5,
                       ),
-                      child: Icon(icon, color: Colors.white, size: 24),
-                    ),
-                    // Small "Learning" Tag
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        tag,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  child: Icon(icon, color: gradientColors.first, size: 28),
                 ),
 
                 // Text Content
@@ -199,15 +311,26 @@ class HomeScreen extends StatelessWidget {
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
+                        letterSpacing: 0.5,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.white.withOpacity(0.8),
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white.withOpacity(0.4),
+                          ),
+                        ),
+                        const Spacer(),
+                        Icon(
+                          Icons.arrow_forward,
+                          size: 14,
+                          color: Colors.white.withOpacity(0.2),
+                        ),
+                      ],
                     ),
                   ],
                 ),
