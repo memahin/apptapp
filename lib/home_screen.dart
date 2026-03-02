@@ -1,10 +1,12 @@
 import 'dart:ui';
+import 'package:apptapp/person_app.dart';
 import 'package:apptapp/todo_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'calculator_app.dart';
 import 'counter_app.dart';
 import 'moneyTracker_app.dart';
+import 'person_app.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,13 +46,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           // 1. Ambient Background Glows
           Positioned(
             top: -100,
-            right: -50,
+            left: -20,
             child: Container(
               width: 300,
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF6366F1).withOpacity(0.15),
+                color: const Color(0xFF6366F1).withOpacity(0.10),
                 boxShadow: [
                   BoxShadow(color: const Color(0xFF6366F1).withOpacity(0.15), blurRadius: 100, spreadRadius: 50)
                 ],
@@ -59,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           Positioned(
             bottom: -100,
-            left: -50,
+           right: -50,
             child: Container(
               width: 300,
               height: 300,
@@ -147,6 +149,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         gradientColors: [const Color(0xFFF472B6), const Color(0xFFDB2777)],
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CalculatorApp())),
                       ),
+                      _buildAnimatedCard(
+                        index: 3,
+                        title: 'Near',
+                        subtitle: 'Pearson',
+                        icon: Icons.account_circle_outlined,
+                        gradientColors: [const Color(0xFFF47216), const Color(0xFFDB2757)],
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PersonApp())),
+                      ),
                     ],
                   ),
                 ),
@@ -175,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           const SizedBox(height: 4),
           const Text(
-            'AppTapp Hub',
+            'AppTapp',
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
