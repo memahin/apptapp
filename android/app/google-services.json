@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "734082186385",
+    "project_id": "apptapp-1",
+    "storage_bucket": "apptapp-1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:734082186385:android:2ab41eb37276fa7cdf5330",
+        "android_client_info": {
+          "package_name": "com.rupantorsoft.apptapp.apptapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDj8fSF0cCBEYN5fzvunWZbq7H_DKqcjxs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
